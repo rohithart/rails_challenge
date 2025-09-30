@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_29_222919) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_30_000203) do
   create_table "orders", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "total"
@@ -144,6 +144,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_29_222919) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "email"
+    t.text "email_domain"
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["email_domain"], name: "index_users_on_email_domain"
   end
 
   add_foreign_key "orders", "users"
