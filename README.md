@@ -23,7 +23,7 @@ This Rails app implements:
 * `SolidQueue` is a placeholder queue system; jobs are stubbed for test purposes.
 * All emails are normalized to lowercase and must be unique.
 * Timebox for implementation: 1 hour, so some optional optimizations (e.g., EXPLAIN QUERY PLAN, Bullet gem checks) are noted but not fully implemented.
-
+* Tried to implement `Rubocop` for linting. However that require files to be updated in many places which will make it difficult for the reviewer.
 ---
 
 ## Tasks Implemented
