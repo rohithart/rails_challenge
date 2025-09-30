@@ -1,16 +1,34 @@
 class User < ApplicationRecord
   has_many :orders, dependent: :destroy
+  
+  before_validation :normalize_email
+  before_validation :set_email_domain
+
+  validates :email, presence: true
+  validates :email, format: { with: /\A[^@\s]+@[^@\s]+\.[^@\s]+\z/, message: "is invalid" }
+  validates :email, uniqueness: { case_sensitive: false }
 
   # Task 1: ActiveRecord query optimization
-  # TODO: Implement `.with_order_counts(min:, since:)` efficiently using SQL (joins/group/having)
-  # Current naive implementation is intentionally inefficient and causes N+1 work in callers.
   def self.with_order_counts(min: 5, since: 30.days.ago)
-    all.select { |u| u.orders.where("created_at >= ?", since).count > min }
+    left_joins(:orders)
+      .where("orders.created_at >= ? OR orders.id IS NULL", since)
+      .group("users.id")
+      .select("users.*, COUNT(orders.id) AS orders_count")
+      .having("COUNT(orders.id) > ?", min)
   end
 
   # For Task 4 (Debugging / Performance)
-  # Inefficient version below; refactor in the exercise to an eager/preloaded, DB-driven approach.
-  def recent_order_totals
-    orders.last(5).map(&:total)
+  def recent_order_totals(limit: 5)
+    orders.order(created_at: :desc).limit(limit).pluck(:total)
+  end
+
+  private
+
+  def normalize_email
+    self.email = email.to_s.strip.downcase.presence
+  end
+
+  def set_email_domain
+    self.email_domain = email.to_s.split('@').last&.downcase if email.present?
   end
 end
