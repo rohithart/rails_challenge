@@ -9,4 +9,9 @@ class User < ApplicationRecord
       .select("users.*, COUNT(orders.id) AS orders_count")
       .having("COUNT(orders.id) > ?", min)
   end
+
+  # For Task 4 (Debugging / Performance)
+  def recent_order_totals(limit: 5)
+    orders.order(created_at: :desc).limit(limit).pluck(:total)
+  end
 end
